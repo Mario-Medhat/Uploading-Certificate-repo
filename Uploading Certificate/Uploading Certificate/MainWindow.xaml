@@ -1,0 +1,160 @@
+<Window x:Class="CertificateUploader.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Certificate Manager" Height="600" Width="950"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6F9">
+
+    <Window.Resources>
+
+        <!-- Primary button style (Get Certificates) -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2F6FED"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#255DCB"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#1E4EAF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#C7CCD6"/>
+                                <Setter Property="Foreground" Value="#8A8F99"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary button style (Upload) -->
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#12B76A"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#0E9C5A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Clear button style (Clear) -->
+        <Style x:Key="ClearButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#EF4444"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#DC2626"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- DataGrid header style -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#2F6FED"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+            <Setter Property="BorderBrush" Value="#255DCB"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Certificate Manager"
+                       FontSize="24" FontWeight="Bold" Foreground="#1F2430"/>
+            <TextBlock Text="Load employee certificate records from Excel, then upload them."
+                       FontSize="13" Foreground="#6B7280" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Action buttons -->
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="16"
+                BorderBrush="#E5E7EB" BorderThickness="1" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="GetCertificatesButton"
+                        Content="Get Certificates"
+                        Style="{StaticResource PrimaryButton}"
+                        Click="GetCertificatesButton_Click"
+                        Width="160"/>
+
+                <Button x:Name="UploadButton"
+                        Content="Upload"
+                        Style="{StaticResource SecondaryButton}"
+                        IsEnabled="False"
+                        Click="UploadButton_Click"
+                        Width="140"
+                        Margin="12,0,0,0"/>
+                
+                <Button x:Name="ClearButton"
+                         Content="Clear"
+                         Style="{StaticResource ClearButton}"
+                         IsEnabled="False"
+                         Click="ClearButton_Click"
+                         Width="140"
+                         Margin="12,0,0,0"/>
+                
+                <TextBlock x:Name="StatusText"
+                           VerticalAlignment="Center"
+                           Margin="16,0,0,0"
+                           FontSize="13"
+                           Foreground="#6B7280"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Data table (hidden until data is loaded) -->
+        <Border Grid.Row="2" Background="White" CornerRadius="8"
+                BorderBrush="#E5E7EB" BorderThickness="1" Padding="1">
+            <DataGrid x:Name="CertificatesGrid"
+                      Visibility="Collapsed"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="#EEF0F3"
+                      RowHeight="34"
+                      HeadersVisibility="Column"
+                      BorderThickness="0"
+                      AlternatingRowBackground="#F8FAFC"
+                      Background="White"
+                      Foreground="Black">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Employee ID" Binding="{Binding EmployeeID}" Width="120"/>
+                    <DataGridTextColumn Header="Certificate Name" Binding="{Binding CertificateName}" Width="*"/>
+                    <DataGridTextColumn Header="Certificate Number" Binding="{Binding CertificateNumber}" Width="160"/>
+                    <DataGridTextColumn Header="Issue Date" Binding="{Binding IssueDate, StringFormat=yyyy-MM-dd}" Width="120"/>
+                    <DataGridTextColumn Header="Renewal Date" Binding="{Binding RenewalDate, StringFormat=yyyy-MM-dd}" Width="120"/>
+                    <DataGridTextColumn Header="Certificate Type" Binding="{Binding CertificateType}" Width="150"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Footer -->
+        <TextBlock Grid.Row="3" x:Name="RecordCountText"
+                   Margin="0,12,0,0" FontSize="12" Foreground="#9CA3AF"/>
+
+    </Grid>
+</Window>
