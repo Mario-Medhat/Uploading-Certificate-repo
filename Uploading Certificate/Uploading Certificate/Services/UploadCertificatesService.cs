@@ -40,11 +40,11 @@ namespace Uploading_Certificate.Services
                     {
                         certificatesToUpload.Add(new Certificate
                         {
-                            EmployeeID = int.Parse(row.Cell(1).GetString().Trim()),
+                            EmployeeID = row.Cell(1).GetString().Trim(),
                             CertificateName = row.Cell(2).GetString(),
                             CertificateNumber = row.Cell(3).GetString().Trim(),
-                            IssueDate = row.Cell(4).GetDateTime(),
-                            RenewalDate = row.Cell(5).GetDateTime(),
+                            IssueDate = DateOnly.FromDateTime(row.Cell(4).GetDateTime()),
+                            RenewalDate = DateOnly.FromDateTime(row.Cell(5).GetDateTime()),
                             CertificateType = row.Cell(6).GetString()
                         });
                     }
@@ -64,23 +64,32 @@ namespace Uploading_Certificate.Services
                     var result = MessageBox.Show($"{certificatesToUpload.Count} certificates ready to upload.", "Upload Certificates", MessageBoxButton.OKCancel, MessageBoxImage.Information);
                     if (result == MessageBoxResult.OK)
                     {
-                        foreach (var cert in certificatesToUpload)
+                        int updatedcounter = 0;
+                        int insertedcounter = 0;
+
+                        foreach (var certificateExcel in certificatesToUpload)
                         {
-                            bool doesExisting = certificateRepository.GetCertificate(cert.EmployeeID) != null;
-                            if (doesExisting)
+                            // Get the certificate from database to get the correct ID
+                            var certificateDB = certificateRepository.GetCertificate(certificateExcel.EmployeeID!);
+
+                            // check if it's existing
+                            if (certificateDB != null)
                             {
                                 // Update existing certificate
-                                certificateRepository.UpdateCertificate(cert);
+                                certificateRepository.UpdateCertificate(certificateDB);
+                                updatedcounter++;
 
                             }
                             else
                             {
                                 // Insert new certificate
-                                certificateRepository.InsertCertificate(cert);
+                                certificateRepository.InsertCertificate(certificateExcel);
+                                insertedcounter++;
                             }
 
                         }
-                            MessageBox.Show($"{certificatesToUpload.Count} Certificates uploaded successfully!", "Upload Certificates", MessageBoxButton.OK, MessageBoxImage.Information);
+                        string message = $"Certificates uploaded successfully!\nInserted: {insertedcounter} \nUpdated: {updatedcounter}";
+                        MessageBox.Show(message, "Upload Certificates", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {

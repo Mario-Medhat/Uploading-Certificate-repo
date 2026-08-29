@@ -4,16 +4,35 @@ namespace Uploading_Certificate.Models
 {
     public class Certificate
     {
-        [Key]
-        public int GKey { get; set; }
-        public int EmployeeID { get; set; }
+       [Key]
+        public int ID { get; set; }
+
+        [MaxLength(50)]
+        public string? EmployeeID { get; set; }
+
+        [MaxLength(200)]
         public string CertificateName { get; set; } = "Government Driving License";
-        public string CertificateNumber { get; set; }
-        public DateTime IssueDate { get; set; }
-        public DateTime RenewalDate { get; set; }
-        public string CertificateType { get; set; }
-        public string ModifiedBy { get; set; } = Environment.UserName;
+
+        [MaxLength(50)]
+        public string? CertificateNumber { get; set; }
+
+        public DateOnly? IssueDate { get; set; }
+
+        public DateOnly? RenewalDate { get; set; }
+
+        public string Attachment { get; set; } = string.Empty;
+
+        public DateTime Created { get; set; } = DateTime.Now;
+
+        [MaxLength(20)]
         public string CreatedBy { get; set; } = Environment.UserName;
-        public string Created { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        public DateTime? Modified { get; set; } = null;
+
+        [MaxLength(20)]
+        public string? ModifiedBy { get; set; } = Environment.UserName;
+
+        [MaxLength(20)]
+        public string? CertificateType { get; set; }
     }
 }

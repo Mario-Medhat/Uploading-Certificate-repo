@@ -13,7 +13,7 @@ namespace Uploading_Certificate.Repositories
             this.ucDbContext = ucDbContext;
         }
 
-        public Certificate GetCertificate(int EmployeeID)
+        public Certificate? GetCertificate(string EmployeeID)
         {
             return ucDbContext.Certificates.FirstOrDefault(c => c.EmployeeID == EmployeeID);
         }

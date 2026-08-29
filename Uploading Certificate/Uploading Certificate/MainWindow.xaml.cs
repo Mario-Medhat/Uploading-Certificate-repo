@@ -79,6 +79,7 @@ namespace CertificateUploader
         private void Clear()
         {
             uploadCertificatesService.certificatesToUpload.Clear();
+            CertificatesGrid.ItemsSource = null;
             CertificatesGrid.ItemsSource = uploadCertificatesService.certificatesToUpload;
             CertificatesGrid.Visibility = Visibility.Collapsed;
             UploadButton.IsEnabled = false;
